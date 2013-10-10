@@ -8,7 +8,7 @@
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
 #
-#     http://www.apache.org/licenses/LICENSE-2.0
+# http://www.apache.org/licenses/LICENSE-2.0
 #
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
@@ -50,6 +50,10 @@ class Chef
         :long => "--image IMAGE",
         :description => "The AMI for the server",
         :proc => Proc.new { |i| Chef::Config[:knife][:image] = i }
+
+      option :iam_instance_profile,
+        :long => "--iam-profile NAME",
+        :description => "The IAM instance profile to apply to this instance."
 
       option :security_groups,
         :short => "-G X,Y,Z",
@@ -220,7 +224,7 @@ class Chef
 
       option :hint,
         :long => "--hint HINT_NAME[=HINT_FILE]",
-        :description => "Specify Ohai Hint to be set on the bootstrap target.  Use multiple --hint options to specify multiple hints.",
+        :description => "Specify Ohai Hint to be set on the bootstrap target. Use multiple --hint options to specify multiple hints.",
         :proc => Proc.new { |h|
            Chef::Config[:knife][:hints] ||= {}
            name, path = h.split("=")
@@ -372,6 +376,7 @@ class Chef
         printed_security_group_ids = @server.security_group_ids.join(", ") if @server.security_group_ids
         msg_pair("Security Group Ids", printed_security_group_ids) if vpc_mode? or @server.security_group_ids
 
+        msg_pair("IAM Profile", locate_config_value(:iam_instance_profile))
 
         msg_pair("Tags", printed_tags)
         msg_pair("SSH Key", @server.key_name)
@@ -443,6 +448,7 @@ class Chef
         msg_pair("Availability Zone", @server.availability_zone)
         msg_pair("Security Groups", printed_security_groups) unless vpc_mode? or (@server.groups.nil? and @server.security_group_ids)
         msg_pair("Security Group Ids", printed_security_group_ids) if vpc_mode? or @server.security_group_ids
+        msg_pair("IAM Profile", locate_config_value(:iam_instance_profile)) if locate_config_value(:iam_instance_profile)
         msg_pair("Tags", printed_tags)
         msg_pair("SSH Key", @server.key_name)
         msg_pair("Root Device Type", @server.root_device_type)
@@ -563,7 +569,7 @@ class Chef
         super([:image, :aws_ssh_key_id, :aws_access_key_id, :aws_secret_access_key])
 
         if ami.nil?
-          ui.error("You have not provided a valid image (AMI) value.  Please note the short option for this value recently changed from '-i' to '-I'.")
+          ui.error("You have not provided a valid image (AMI) value. Please note the short option for this value recently changed from '-i' to '-I'.")
           exit 1
         end
 
@@ -615,6 +621,7 @@ class Chef
         server_def[:subnet_id] = locate_config_value(:subnet_id) if vpc_mode?
         server_def[:private_ip_address] = locate_config_value(:private_ip_address) if vpc_mode?
         server_def[:placement_group] = locate_config_value(:placement_group)
+        server_def[:iam_instance_profile_name] = locate_config_value(:iam_instance_profile)
 
         if Chef::Config[:knife][:aws_user_data]
           begin

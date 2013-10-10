@@ -12,9 +12,19 @@ Gem::Specification.new do |s|
   s.description  = s.summary
   s.license      = 'Apache 2.0'
 
+<<<<<<< HEAD
+  s.files         = `git ls-files`.split("\n")
+  s.test_files    = `git ls-files -- {test,spec,features}/*`.split("\n")
+  s.executables   = `git ls-files -- bin/*`.split("\n").map{ |f| File.basename(f) }
+  s.add_dependency "fog", "~> 1.15.0"
+  s.add_dependency "chef", ">= 0.10.10"
+  s.add_dependency "knife-windows", ">= 0.5.12"
+  %w(rspec-core rspec-expectations rspec-mocks  rspec_junit_formatter).each { |gem| s.add_development_dependency gem }
+=======
   s.files        = `git ls-files`.split("\n")
   s.test_files   = `git ls-files -- {test,spec,features}/*`.split("\n")
   s.executables  = `git ls-files -- bin/*`.split("\n").map{ |f| File.basename(f) }
+>>>>>>> 4eb91eb3f528af2d14812e9bda745bb634b8f9a9
 
   s.add_dependency 'fog',           '~> 1.6'
   s.add_dependency 'chef',          '>= 0.10.10'

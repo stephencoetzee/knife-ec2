@@ -4,7 +4,7 @@
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
 #
-#     http://www.apache.org/licenses/LICENSE-2.0
+# http://www.apache.org/licenses/LICENSE-2.0
 #
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
@@ -40,6 +40,7 @@ describe Chef::Knife::Ec2ServerDelete do
                              :groups => ['group1', 'group2'],
                              :security_group_ids => ['sg-00aa11bb'],
                              :dns_name => 'ec2-75.101.253.10.compute-1.amazonaws.com',
+                             :iam_instance_profile => {},
                              :public_ip_address => '75.101.253.10',
                              :private_dns_name => 'ip-10-251-75-20.ec2.internal',
                              :private_ip_address => '10.251.75.20',
@@ -118,7 +119,7 @@ describe Chef::Knife::Ec2ServerDelete do
         @knife_ec2_delete.run
       end
 
-      it "should use  the instance id if search does not return anything" do
+      it "should use the instance id if search does not return anything" do
         @ec2_servers.should_receive(:get).with('i-foo').and_return(@ec2_server)
         Fog::Compute::AWS.should_receive(:new).and_return(@ec2_connection)
         @knife_ec2_delete.name_args = ['i-foo']

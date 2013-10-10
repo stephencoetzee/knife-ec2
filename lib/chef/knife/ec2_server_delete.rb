@@ -8,7 +8,7 @@
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
 #
-#     http://www.apache.org/licenses/LICENSE-2.0
+# http://www.apache.org/licenses/LICENSE-2.0
 #
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
@@ -38,17 +38,17 @@ class Chef
         :long => "--purge",
         :boolean => true,
         :default => false,
-        :description => "Destroy corresponding node and client on the Chef Server, in addition to destroying the EC2 node itself.  Assumes node and client have the same name as the server (if not, add the '--node-name' option)."
+        :description => "Destroy corresponding node and client on the Chef Server, in addition to destroying the EC2 node itself. Assumes node and client have the same name as the server (if not, add the '--node-name' option)."
 
       option :chef_node_name,
         :short => "-N NAME",
         :long => "--node-name NAME",
-        :description => "The name of the node and client to delete, if it differs from the server name.  Only has meaning when used with the '--purge' option."
+        :description => "The name of the node and client to delete, if it differs from the server name. Only has meaning when used with the '--purge' option."
 
       # Extracted from Chef::Knife.delete_object, because it has a
       # confirmation step built in... By specifying the '--purge'
       # flag (and also explicitly confirming the server destruction!)
-      # the user is already making their intent known.  It is not
+      # the user is already making their intent known. It is not
       # necessary to make them confirm two more times.
       def destroy_item(klass, name, type_name)
         begin
@@ -80,6 +80,7 @@ class Chef
             msg_pair("Region", connection.instance_variable_get(:@region))
             msg_pair("Availability Zone", @server.availability_zone)
             msg_pair("Security Groups", @server.groups.join(", "))
+            msg_pair("IAM Profile", iam_name_from_profile(@server.iam_instance_profile)) if @server.iam_instance_profile
             msg_pair("SSH Key", @server.key_name)
             msg_pair("Root Device Type", @server.root_device_type)
             msg_pair("Public DNS Name", @server.dns_name)
@@ -106,7 +107,7 @@ class Chef
               ui.warn("Corresponding node and client for the #{instance_id} server were not deleted and remain registered with the Chef Server")
             end
           rescue NoMethodError
-            ui.error("Could not locate server '#{instance_id}'.  Please verify it was provisioned in the '#{locate_config_value(:region)}' region.")
+            ui.error("Could not locate server '#{instance_id}'. Please verify it was provisioned in the '#{locate_config_value(:region)}' region.")
           end
         end
       end
